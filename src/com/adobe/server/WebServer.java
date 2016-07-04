@@ -1,5 +1,7 @@
 package com.adobe.server;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
@@ -20,17 +22,24 @@ import com.adobe.logutils.MyLogger;
  */
 public class WebServer implements Runnable {
 	
-	Logger log = MyLogger.getLogger(this.getClass().getSimpleName());
+	static Logger log = MyLogger.getLogger(WebServer.class.getSimpleName());
 
 	public static String SERVERROOT = null;
 	public static final String DEFAULT_FILE = "index.html";
 	public static final String DEFAULT_FILE2 = "index2.html";
+	public static final String DEFAULT_404 = "404.html"; 
 	private ServerSocket serverSocket;
 	private ExecutorService threadPool;
 
 	private final int port;
 	private final int threadThreshold;
 	
+	/**
+	 * WebServer constructor
+	 * @param port
+	 * @param webRoot
+	 * @param maxThreads
+	 */
 	public WebServer(int port, String webRoot, int maxThreads) {
 		this.port = port;
 		this.threadThreshold = maxThreads;
@@ -70,6 +79,7 @@ public class WebServer implements Runnable {
 			// no exception means port is available
 			return true;
 		} catch (Exception e) {
+			log.info("Port "+port+" already in use");
 			return false;
 		} finally {
 			if (ss != null) {
@@ -86,7 +96,8 @@ public class WebServer implements Runnable {
 	{
 		try
 		{
-			threadPool = Executors.newCachedThreadPool();
+			//threadPool = Executors.newCachedThreadPool();
+			threadPool = Executors.newFixedThreadPool(threadThreshold);
 			serverSocket = new ServerSocket(port);
 	    	log.info("Web Server listening for connections on port " + port);
    
@@ -111,6 +122,7 @@ public class WebServer implements Runnable {
 		{
 			if(serverSocket != null)
 			{
+				//close server socket
 				serverSocket.close();
 			}
 		}catch(IOException e1)
@@ -127,4 +139,42 @@ public class WebServer implements Runnable {
 		}
 		
 	}
+	
+	 /**
+	 * Initializes the default content for tests
+	 */
+	public static void initializeDefaultContent() {
+	        File root = new File(SERVERROOT);
+	        if (!root.exists()) {
+	            root.mkdir();
+	            log.info("Initialized default webroot directory: " + root.getAbsolutePath());
+	        }
+	        initializeFile(SERVERROOT + File.separator + DEFAULT_FILE, "<!DOCTYPE html><html><head><title>WebServer</title></head><body><h1>Web Server Response!!!</h1></body></html>");
+	        initializeFile(SERVERROOT + File.separator + DEFAULT_FILE2, "<!DOCTYPE html><html><head><title>WebServer</title></head><body><h1>Web Server Response 2!!!</h1></body></html>");
+	        initializeFile(SERVERROOT + File.separator + DEFAULT_404, "<!DOCTYPE html><html><head><title>404</title></head><body>404 - Page not found</body></html>");
+	    }
+
+	    /**
+	     * Initializes file if it doesn't exist.
+	     *
+	     * @param path    the file path.
+	     * @param content the file content.
+	     */
+	    private static void initializeFile(String path, String content) {
+	        File file = new File(path);
+	        if (!file.exists()) {
+	            try {
+	                if (content != null) {
+	                    FileWriter writer = new FileWriter(file);
+	                    writer.write(content);
+	                    writer.close();
+	                } else {
+	                    file.createNewFile();
+	                }
+	                log.info("Initialized default content: " + path);
+	            } catch (IOException ex) {
+	                log.error("Exception occured while initializing default file: " + path, ex);
+	            }
+	        }
+	    }
 }

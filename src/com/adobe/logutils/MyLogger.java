@@ -12,11 +12,15 @@ import org.apache.log4j.PropertyConfigurator;
 
 /**
  * @author rbajaj
- *
+ * Initializes Logger of ThreadPoolWebServer
  */
 public class MyLogger  
 {
-  public static Logger getLogger(String logFile)
+  /**
+ * @param logFile
+ * @return
+ */
+public static Logger getLogger(String logFile)
   {
 	  Logger log= null;
 	  try{
@@ -30,16 +34,20 @@ public class MyLogger
 	      log = Logger.getLogger(logFile);
 	      
 	  }catch(FileNotFoundException fe){
-		  
+		  System.out.println("Log4j properties not found "+fe);
 	  }catch(IOException ie){
-		  
+		  System.out.println("Exception while intializing MyLogger "+ie);
 	  }
 	  return log;
 	  
   }
   
   
-  public static String getStackTraceAsString(Exception e){
+  /**
+ * @param e
+ * @return
+ */
+public static String getStackTraceAsString(Exception e){
 	    
       StringWriter sw = new StringWriter();
       e.printStackTrace(new PrintWriter(sw));

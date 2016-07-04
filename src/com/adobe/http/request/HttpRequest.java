@@ -17,7 +17,7 @@ import com.adobe.server.WebServer;
 
 /**
  * @author rbajaj
- *
+ * Defines Methods and data associated with HTTP request. 
  */
 public class HttpRequest {
 	
@@ -33,6 +33,12 @@ public class HttpRequest {
 	private static final String HEAD = "HEAD";
 	public static final String CONNECTION_CLOSE = "close";
 	
+	/**
+	 * @param in
+	 * @param url - request url
+	 * @param method - request method
+	 * @param headers 
+	 */
 	public HttpRequest(BufferedReader in, String url, String method, HashMap<String, String> headers)
 	{
 		this.url = url;
@@ -49,6 +55,8 @@ public class HttpRequest {
 	}
 	
 	/**
+	 * @param response
+	 * @throws FileNotFoundException
 	 * Initialization work prior to sending a response (common to all requests types)
 	 */
 	protected void initResponse(HttpResponse response) throws FileNotFoundException
@@ -65,10 +73,15 @@ public class HttpRequest {
 		try {
 			fis.close();
 		} catch (IOException e) {
-			
+			log.error("File not exist: "+e.getMessage());
 		}
 	}
 	
+	/**
+	 * @param path
+	 * @return
+	 * Prepare request file path
+	 */
 	private String preparePath(String path) {
         if (path.equals("/") || path == null || path.contains("..")) {
             path = WebServer.DEFAULT_FILE;
@@ -78,6 +91,12 @@ public class HttpRequest {
         return path;
     }
 	
+	/**
+	 * @param inStream
+	 * @return
+	 * @throws IOException
+	 * @throws SocketTimeoutException
+	 */
 	public static HttpRequest parseRequest(InputStream inStream) throws IOException, SocketTimeoutException
 	{
 		log.info("Parsing Request");
@@ -86,12 +105,14 @@ public class HttpRequest {
     	
 		log.info("Request: " + line);
 		
+		//Verify protocol of the request
 		String[] req = line.split(" ", 3);
 		String protocol = req[2];
 		if (line == null || !protocol.startsWith("HTTP/")) {
 			throw new IOException("Server accepts only HTTP requests.");
 		}
 		      
+		//Get method and requested file url
        	String method = req[0];
        	String url = req[1].toLowerCase();
        
@@ -115,29 +136,41 @@ public class HttpRequest {
 	}
 	
 	
+	/**
+	 * Send response depending upon the request method
+	 * @param response
+	 */
 	public void sendResponse(HttpResponse response) {
 		
 			try
 			{
 				initResponse(response);
 				log.info("Request Method: "+method);
+				//response constructed depending upon the method in request
 				if(GET.equals(method))
 		    	{					
+					//GET Method
 					response.sendHeaders(file);
 					response.sendBody(file);
 		    	} else if(HEAD.equals(method)){
+		    		//HEAD method
 		    		response.sendHeaders(file);
 		    	} else{
+		    		//Not Implemented Method
 		    		response.sendNotImplementedMethod(method);
 		    	}
 				
-				
 			}catch (FileNotFoundException fe)
 		    {
+				//File Not Found Response
+				log.info("File Not Found.");
 		    	response.fileNotFound(url);
 		    }	
 	}
 	
+	/**
+	 * Close http request reader
+	 */
 	public void close()
 	{
 		try

@@ -15,7 +15,7 @@ import com.adobe.http.request.HttpRequest;
 
 /**
  * @author rbajaj
- *
+ * Defines methods and data associated with HTTP response.
  */
 public class HttpResponse {
 	static Logger log = Logger.getLogger(HttpResponse.class.toString());
@@ -30,6 +30,10 @@ public class HttpResponse {
 	private boolean keepAlive;
 	private byte[] body = null;
 	
+	/**
+	 * @param os
+	 * @param keepAlive
+	 */
 	public HttpResponse(OutputStream os, boolean keepAlive) {
 		out = new PrintWriter(os);
 		outStream = new BufferedOutputStream(os);
@@ -93,18 +97,27 @@ public class HttpResponse {
 	 */
 	public void sendBody(File file) throws FileNotFoundException {
 		FileInputStream fileIn = null;
+		byte[] fileData = new byte[1024];
+        int bytesRead = 0;
 
 		try {
-			int fileLength = (int) file.length();
+		/*	int fileLength = (int) file.length();
 			// create byte array to store file data
-			byte[] fileData = new byte[fileLength];
+			//byte[] fileData = new byte[fileLength];
 
 			// open input stream from file
 			fileIn = new FileInputStream(file);
 			// read file into byte array
 			fileIn.read(fileData);
 
-			outStream.write(fileData, 0, fileLength);
+			outStream.write(fileData, 0, fileLength); */
+			
+			// open input stream from file
+			fileIn = new FileInputStream(file);
+			while ((bytesRead = fileIn.read(fileData)) != -1) {
+				outStream.write(fileData, 0, bytesRead);
+			}
+						
 			outStream.flush(); // flush binary output stream buffer
 		} catch (IOException ioe) {
 			log.error("Server Error: " + ioe);

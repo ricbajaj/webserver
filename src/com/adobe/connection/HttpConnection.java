@@ -15,7 +15,7 @@ import com.adobe.server.WebServer;
 
 /**
  * @author rbajaj
- *
+ * Defines the connection handler for Web Server
  */
 public class HttpConnection implements Runnable {
 	
@@ -50,8 +50,11 @@ public class HttpConnection implements Runnable {
 			//indefinite while loop to add keep alive behavior
 		    	while(true)
 		    	{
+		    		//parse request
 		    		httpRequest = HttpRequest.parseRequest(inStream);
+		    		//keep alive boolean
 		    		boolean isKeepAlive = httpRequest.keepAlive;
+		    		//send response
 		    		httpResponse = new HttpResponse(outStream, isKeepAlive);
 		    		httpRequest.sendResponse(httpResponse);
 		    		if(!isKeepAlive)
@@ -78,6 +81,9 @@ public class HttpConnection implements Runnable {
 		    }
 	}
 	
+	/**
+	 * Close all streams and sockets
+	 */
 	private void close()
 	{
 		try
