@@ -1,0 +1,8 @@
+target/
+.idea/
+*.iml
+*.html
+root/
+.settings/
+.classpath
+.project
