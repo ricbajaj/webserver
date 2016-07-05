@@ -8,10 +8,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.adobe.logutils.MyLogger;
+
 import org.apache.log4j.Logger;
 
 import com.adobe.connection.HttpConnection;
-import com.adobe.logutils.MyLogger;
 
 /**
  * @author rbajaj
@@ -22,7 +23,7 @@ import com.adobe.logutils.MyLogger;
  */
 public class WebServer implements Runnable {
 	
-	static Logger log = MyLogger.getLogger(WebServer.class.getSimpleName());
+	static Logger log = null;
 
 	public static String SERVERROOT = null;
 	public static final String DEFAULT_FILE = "index.html";
@@ -41,6 +42,7 @@ public class WebServer implements Runnable {
 	 * @param maxThreads
 	 */
 	public WebServer(int port, String webRoot, int maxThreads) {
+		log = MyLogger.getLogger(WebServer.class.getSimpleName());
 		this.port = port;
 		this.threadThreshold = maxThreads;
 		SERVERROOT = webRoot;

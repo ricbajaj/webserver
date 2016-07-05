@@ -10,10 +10,10 @@ import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-
 import com.adobe.http.response.HttpResponse;
 import com.adobe.server.WebServer;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author rbajaj

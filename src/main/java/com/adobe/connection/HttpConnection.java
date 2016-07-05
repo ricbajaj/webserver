@@ -7,11 +7,11 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
-import org.apache.log4j.Logger;
-
 import com.adobe.http.request.HttpRequest;
 import com.adobe.http.response.HttpResponse;
 import com.adobe.server.WebServer;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author rbajaj
