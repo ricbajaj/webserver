@@ -53,8 +53,8 @@ public class WebServerTest extends TestCase {
 	    public void setUp() {
 	        if (!running) {
 	            log.info("Starting WebServer test instance on port: " + port);
-	            workingDir = System.getProperty("user.dir");
-	            log.info("Working directory: " + System.getProperty("user.dir"));
+	            workingDir = System.getProperty("user.dir")+"/root/";
+	            log.info("Working directory: " + workingDir);
 	            log.info("Test WebServer Logs: " + System.getProperty("user.dir") + "/logs/");
 	            WebServer ws = new WebServer(port, workingDir, 10);
 	            WebServer.initializeDefaultContent();
